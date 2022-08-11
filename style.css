@@ -1,0 +1,152 @@
+:root {
+    box-sizing: border-box;
+    --num-color: rgb(242, 200, 172);
+}
+
+body {
+    margin-top: 0;
+}
+
+.clicked {
+    box-shadow: inset 4px 3px 1px 2px rgba(0, 0, 0, 0.2),
+    inset -4px -3px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.unclicked {
+    box-shadow: none;
+}
+
+main {
+}
+
+img {
+    display: block;
+    width: 2.5rem
+}
+
+.numbers > a {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 2.25rem;
+    color: black;
+    font-weight: 100;
+    padding: 0.5em;
+    border-radius: 300px;
+    transition-duration: 500ms;
+    transition-property: background-color, box-shadow, color;
+}
+
+.numbers > a:hover {
+    background-color: rgb(217, 214, 208);
+    color: rgb(230, 165, 122);
+}
+
+.clear-button:hover {
+    content: url('img/clear-btn-colored.svg')
+}
+
+.numbers {
+    display: grid;
+    max-width: 100%;
+    justify-items: center;
+    grid-template-columns: repeat(4, 1fr);
+    background-color: rgb(250, 246, 245);
+    padding: 1em 1.5em;
+    border-radius: 10px;
+}
+
+.display {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    min-height: 10rem;
+    border-bottom: 0.5px solid black;
+    border-radius: 10px;
+}
+
+.display > .digits {
+    display: inline;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    min-height: 5rem;
+    font-size: 2rem;
+    color: var(--num-color);
+    font-weight: 700;
+    padding: 0.3em 0.25em 0 0.25em;
+    text-align: right;
+}
+
+.display > .operation-container {
+    display: grid;
+    grid-template-columns:  repeat(3, 1fr);
+    grid-auto-flow: column;
+    place-items: center;
+    max-width: 100%;
+    min-height: 6rem;
+    padding: 0 1em;
+}
+
+.operation-container > * {
+    min-width: 0;
+}
+
+.operated-num {
+    max-width: calc(100% - 1.5em);
+    font-size: 1.5rem;
+    color: var(--num-color);
+}
+
+.first-num {
+    word-break: break-all;
+    justify-self: center;
+}
+
+.second-num {
+    word-break: break-all;
+    justify-self: center;
+}
+
+.operation {
+    justify-self: center;
+    margin: 0.3em 0;
+    max-width: max-content;
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgb(242, 158, 102);
+    min-height: 2.5rem;
+    padding: 0.4em 0.7em;
+    border-radius: 100px;
+    transition: 1s border;
+}
+
+.active {
+    border: 2px solid black;
+}
+
+.inactive {
+    display: none;
+    border: none;
+}
+
+
+.calculator-container {
+    position: absolute;
+    top: 1vh;
+    left: 40vw;
+    border: 2.5px solid black;
+    border-radius: 10px;
+    width: 23rem;
+}
+
+.numbers > .calculator-equality-sign {
+    display: flex;
+    grid-column-start: 4;
+    grid-row: 4/ span 2;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(245, 223, 208);
+}
+
