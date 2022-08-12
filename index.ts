@@ -59,6 +59,20 @@ function setOperation(
     }
 }
 
+function clearDisplay(
+    firstNumPlace: HTMLElement,
+    secondNumPlace: HTMLElement,
+    operationPlace: Element
+): void {
+    firstNumPlace.dataset.num = "";
+    firstNumPlace.innerHTML = "";
+    secondNumPlace.dataset.num = "";
+    secondNumPlace.dataset.percent = "";
+    secondNumPlace.innerHTML = "";
+    operationPlace.classList.add("inactive");
+    operationPlace.classList.remove("active");
+}
+
 function showResult(
     firstNumPlace: Element | null,
     secondNumPlace: Element | null,
@@ -80,22 +94,10 @@ function showResult(
             } else {
                 digitsPlace.innerHTML = `${parseFloat(result.toFixed(10))}`;
             }
-            firstNumPlace.dataset.num = "";
-            firstNumPlace.innerHTML = "";
-            secondNumPlace.dataset.num = "";
-            secondNumPlace.dataset.percent = "";
-            secondNumPlace.innerHTML = "";
-            operationPlace.classList.add("inactive");
-            operationPlace.classList.remove("active");
+            clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
         } else {
             digitsPlace.innerHTML = "0";
-            firstNumPlace.dataset.num = "";
-            firstNumPlace.innerHTML = "";
-            secondNumPlace.dataset.num = "";
-            secondNumPlace.dataset.percent = "";
-            secondNumPlace.innerHTML = "";
-            operationPlace.classList.add("inactive");
-            operationPlace.classList.remove("active");
+            clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
         }
     }
 }
@@ -118,31 +120,37 @@ if (
                     firstNumPlace.dataset.num !== "" &&
                     secondNumPlace.dataset.num !== "")
             ) {
-                if (operationPlace.innerHTML === "/") {
-                    digitsPlace.dataset.result = (
-                        parseFloat(<string>firstNumPlace.dataset.num) /
-                        parseFloat(<string>secondNumPlace.dataset.num)
-                    ).toString();
-                } else if (operationPlace.innerHTML === "*") {
-                    digitsPlace.dataset.result = (
-                        parseFloat(<string>firstNumPlace.dataset.num) *
-                        parseFloat(<string>secondNumPlace.dataset.num)
-                    ).toString();
-                } else if (operationPlace.innerHTML === "+") {
-                    digitsPlace.dataset.result = (
-                        parseFloat(<string>firstNumPlace.dataset.num) +
-                        parseFloat(<string>secondNumPlace.dataset.num)
-                    ).toString();
-                } else if (operationPlace.innerHTML === "-") {
-                    digitsPlace.dataset.result = (
-                        parseFloat(<string>firstNumPlace.dataset.num) -
-                        parseFloat(<string>secondNumPlace.dataset.num)
-                    ).toString();
-                } else if (operationPlace.innerHTML === "%") {
-                    digitsPlace.dataset.result = (
-                        parseFloat(<string>firstNumPlace.dataset.num) /
-                        parseFloat(<string>secondNumPlace.dataset.percent)
-                    ).toString();
+                switch (operationPlace.innerHTML) {
+                    case "/":
+                        digitsPlace.dataset.result = (
+                            parseFloat(<string>firstNumPlace.dataset.num) /
+                            parseFloat(<string>secondNumPlace.dataset.num)
+                        ).toString();
+                        break;
+                    case "*":
+                        digitsPlace.dataset.result = (
+                            parseFloat(<string>firstNumPlace.dataset.num) *
+                            parseFloat(<string>secondNumPlace.dataset.num)
+                        ).toString();
+                        break;
+                    case "+":
+                        digitsPlace.dataset.result = (
+                            parseFloat(<string>firstNumPlace.dataset.num) +
+                            parseFloat(<string>secondNumPlace.dataset.num)
+                        ).toString();
+                        break;
+                    case "-":
+                        digitsPlace.dataset.result = (
+                            parseFloat(<string>firstNumPlace.dataset.num) -
+                            parseFloat(<string>secondNumPlace.dataset.num)
+                        ).toString();
+                        break;
+                    case "%":
+                        digitsPlace.dataset.result = (
+                            parseFloat(<string>firstNumPlace.dataset.num) /
+                            parseFloat(<string>secondNumPlace.dataset.percent)
+                        ).toString();
+                        break;
                 }
                 if (el.innerHTML === "=" && digitsPlace.dataset.result) {
                     showResult(
