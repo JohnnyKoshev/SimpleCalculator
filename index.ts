@@ -22,6 +22,69 @@ function assignNumPlace(numPlace: HTMLElement, digitsPlace: Element): void {
     }
 }
 
+function chooseOperation(
+    firstNumPlace: HTMLElement,
+    secondNumPlace: HTMLElement,
+    digitsPlace: HTMLElement,
+    operationPlace: Element,
+    operation: string
+): void {
+    if (operation.includes("img")) {
+        if (digitsPlace.innerHTML === "Infinity" || digitsPlace.innerHTML === "NaN") {
+            digitsPlace.innerHTML = "0";
+        } else {
+            const tempDigitsArr: string[] = digitsPlace.innerHTML.split("");
+            tempDigitsArr.pop();
+            if (tempDigitsArr.length === 0) {
+                tempDigitsArr.push("0");
+            }
+            digitsPlace.innerHTML = tempDigitsArr.join("");
+        }
+    }
+
+    switch (operation) {
+        case "C":
+            digitsPlace.innerHTML = "0";
+            clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
+            break;
+        case "/":
+            setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "/");
+            break;
+        case "*":
+            setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "*");
+            break;
+        case "+":
+            setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "+");
+            break;
+        case "-":
+            setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "-");
+            break;
+        case "%":
+            setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "%");
+            break;
+        case ".":
+            if (digitsPlace.innerHTML.indexOf(".") === -1) {
+                digitsPlace.innerHTML += ".";
+            }
+            break;
+        case "=":
+            if (firstNumPlace.innerHTML !== "" && secondNumPlace.innerHTML === "") {
+                secondNumPlace.dataset.num = digitsPlace.innerHTML;
+                if (digitsPlace.innerHTML.length <= 6 && !digitsPlace.innerHTML.includes(".")) {
+                    secondNumPlace.innerHTML = `${parseFloat(digitsPlace.innerHTML).toPrecision(
+                        digitsPlace.innerHTML.length
+                    )}`;
+                } else {
+                    secondNumPlace.innerHTML = `${parseFloat(digitsPlace.innerHTML).toPrecision(
+                        6
+                    )}`;
+                }
+                digitsPlace.innerHTML = "0";
+            }
+            break;
+    }
+}
+
 function setOperation(
     firstNumPlace: HTMLElement | null,
     secondNumPlace: HTMLElement | null,
@@ -88,26 +151,72 @@ function showResult(
         operationPlace
     ) {
         if (result !== 0) {
-            if (!result.toString().includes(".")) {
-                if (result.toString().length > 40) {
-                    digitsPlace.innerHTML = `${parseFloat(result.toPrecision(20))}`;
+            if (result < Number.MAX_SAFE_INTEGER) {
+                if (!result.toString().includes(".") && !result.toString().includes("e")) {
+                    if (result.toString().length > 40) {
+                        digitsPlace.innerHTML = `${parseFloat(result.toPrecision(20))}`;
+                    } else {
+                        digitsPlace.innerHTML = `${result}`;
+                    }
+                } else if (result.toString().length <= 10) {
+                    digitsPlace.innerHTML = `${parseFloat(
+                        result.toFixed(result.toString().length)
+                    )}`;
                 } else {
-                    digitsPlace.innerHTML = `${result}`;
+                    if (!result.toString().includes(".") && !result.toString().includes("e")) {
+                        digitsPlace.innerHTML = `${parseFloat(result.toPrecision(25))}`;
+                    } else {
+                        digitsPlace.innerHTML = `${parseFloat(result.toFixed(10))}`;
+                    }
                 }
-            } else if (result.toString().length <= 10) {
-                digitsPlace.innerHTML = `${parseFloat(result.toFixed(result.toString().length))}`;
             } else {
-                if (!result.toString().includes(".")) {
-                    digitsPlace.innerHTML = `${parseFloat(result.toPrecision(25))}`;
-                } else {
-                    digitsPlace.innerHTML = `${parseFloat(result.toFixed(10))}`;
-                }
+                digitsPlace.innerHTML = `${parseFloat(result.toPrecision(15))}`;
             }
             clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
         } else {
             digitsPlace.innerHTML = "0";
             clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
         }
+    }
+}
+
+function computeResult(
+    firstNumPlace: HTMLElement,
+    secondNumPlace: HTMLElement,
+    digitsPlace: HTMLElement,
+    operation: string
+): void {
+    switch (escape(operation)) {
+        case "/":
+            digitsPlace.dataset.result = (
+                parseFloat(<string>firstNumPlace.dataset.num) /
+                parseFloat(<string>secondNumPlace.dataset.num)
+            ).toString();
+            break;
+        case "*":
+            digitsPlace.dataset.result = (
+                parseFloat(<string>firstNumPlace.dataset.num) *
+                parseFloat(<string>secondNumPlace.dataset.num)
+            ).toString();
+            break;
+        case "+":
+            digitsPlace.dataset.result = (
+                parseFloat(<string>firstNumPlace.dataset.num) +
+                parseFloat(<string>secondNumPlace.dataset.num)
+            ).toString();
+            break;
+        case "-":
+            digitsPlace.dataset.result = (
+                parseFloat(<string>firstNumPlace.dataset.num) -
+                parseFloat(<string>secondNumPlace.dataset.num)
+            ).toString();
+            break;
+        case "%":
+            digitsPlace.dataset.result = (
+                parseFloat(<string>firstNumPlace.dataset.num) /
+                parseFloat(<string>secondNumPlace.dataset.percent)
+            ).toString();
+            break;
     }
 }
 
@@ -129,39 +238,7 @@ if (
                     firstNumPlace.dataset.num !== "" &&
                     secondNumPlace.dataset.num !== "")
             ) {
-                switch (escape(operationPlace.innerHTML)) {
-                    case "/":
-                        digitsPlace.dataset.result = (
-                            parseFloat(<string>firstNumPlace.dataset.num) /
-                            parseFloat(<string>secondNumPlace.dataset.num)
-                        ).toString();
-                        break;
-                    case "*":
-                        digitsPlace.dataset.result = (
-                            parseFloat(<string>firstNumPlace.dataset.num) *
-                            parseFloat(<string>secondNumPlace.dataset.num)
-                        ).toString();
-                        break;
-                    case "+":
-                        digitsPlace.dataset.result = (
-                            parseFloat(<string>firstNumPlace.dataset.num) +
-                            parseFloat(<string>secondNumPlace.dataset.num)
-                        ).toString();
-                        break;
-                    case "-":
-                        digitsPlace.dataset.result = (
-                            parseFloat(<string>firstNumPlace.dataset.num) -
-                            parseFloat(<string>secondNumPlace.dataset.num)
-                        ).toString();
-                        console.log("im minus");
-                        break;
-                    case "%":
-                        digitsPlace.dataset.result = (
-                            parseFloat(<string>firstNumPlace.dataset.num) /
-                            parseFloat(<string>secondNumPlace.dataset.percent)
-                        ).toString();
-                        break;
-                }
+                computeResult(firstNumPlace, secondNumPlace, digitsPlace, operationPlace.innerHTML);
                 if (el.innerHTML === "=" && digitsPlace.dataset.result) {
                     showResult(
                         firstNumPlace,
@@ -196,92 +273,13 @@ if (
                 } else if (digitsPlace.innerHTML.length > 43 && parseFloat(el.innerText)) {
                     alert("YOU CAN ENTER ONLY 43 DIGITS!");
                 }
-                if (el.innerHTML.includes("img")) {
-                    if (digitsPlace.innerHTML === "Infinity" || digitsPlace.innerHTML === "NaN") {
-                        digitsPlace.innerHTML = "0";
-                    } else {
-                        const tempDigitsArr: string[] = digitsPlace.innerHTML.split("");
-                        tempDigitsArr.pop();
-                        if (tempDigitsArr.length === 0) {
-                            tempDigitsArr.push("0");
-                        }
-                        digitsPlace.innerHTML = tempDigitsArr.join("");
-                    }
-                }
-                switch (el.innerText) {
-                    case "C":
-                        digitsPlace.innerHTML = "0";
-                        clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
-                        break;
-                    case "/":
-                        setOperation(
-                            firstNumPlace,
-                            secondNumPlace,
-                            digitsPlace,
-                            operationPlace,
-                            "/"
-                        );
-                        break;
-                    case "*":
-                        setOperation(
-                            firstNumPlace,
-                            secondNumPlace,
-                            digitsPlace,
-                            operationPlace,
-                            "*"
-                        );
-                        break;
-                    case "+":
-                        setOperation(
-                            firstNumPlace,
-                            secondNumPlace,
-                            digitsPlace,
-                            operationPlace,
-                            "+"
-                        );
-                        break;
-                    case "-":
-                        setOperation(
-                            firstNumPlace,
-                            secondNumPlace,
-                            digitsPlace,
-                            operationPlace,
-                            "-"
-                        );
-                        break;
-                    case "%":
-                        setOperation(
-                            firstNumPlace,
-                            secondNumPlace,
-                            digitsPlace,
-                            operationPlace,
-                            "%"
-                        );
-                        break;
-                    case ".":
-                        if (digitsPlace.innerHTML.indexOf(".") === -1) {
-                            digitsPlace.innerHTML += ".";
-                        }
-                        break;
-                    case "=":
-                        if (firstNumPlace.innerHTML !== "" && secondNumPlace.innerHTML === "") {
-                            secondNumPlace.dataset.num = digitsPlace.innerHTML;
-                            if (
-                                digitsPlace.innerHTML.length <= 6 &&
-                                !digitsPlace.innerHTML.includes(".")
-                            ) {
-                                secondNumPlace.innerHTML = `${parseFloat(
-                                    digitsPlace.innerHTML
-                                ).toPrecision(digitsPlace.innerHTML.length)}`;
-                            } else {
-                                secondNumPlace.innerHTML = `${parseFloat(
-                                    digitsPlace.innerHTML
-                                ).toPrecision(6)}`;
-                            }
-                            digitsPlace.innerHTML = "0";
-                        }
-                        break;
-                }
+                chooseOperation(
+                    firstNumPlace,
+                    secondNumPlace,
+                    digitsPlace,
+                    operationPlace,
+                    el.innerHTML
+                );
             }
         });
     });
