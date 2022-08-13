@@ -80,6 +80,7 @@ function showResult(
     digitsPlace: Element | null,
     result: number
 ): void {
+    debugger;
     if (
         firstNumPlace instanceof HTMLElement &&
         secondNumPlace instanceof HTMLElement &&
@@ -88,11 +89,19 @@ function showResult(
     ) {
         if (result !== 0) {
             if (!result.toString().includes(".")) {
-                digitsPlace.innerHTML = `${parseFloat(result.toPrecision(10))}`;
+                if (result.toString().length > 40) {
+                    digitsPlace.innerHTML = `${parseFloat(result.toPrecision(20))}`;
+                } else {
+                    digitsPlace.innerHTML = `${result}`;
+                }
             } else if (result.toString().length <= 10) {
                 digitsPlace.innerHTML = `${parseFloat(result.toFixed(result.toString().length))}`;
             } else {
-                digitsPlace.innerHTML = `${parseFloat(result.toFixed(10))}`;
+                if (!result.toString().includes(".")) {
+                    digitsPlace.innerHTML = `${parseFloat(result.toPrecision(25))}`;
+                } else {
+                    digitsPlace.innerHTML = `${parseFloat(result.toFixed(10))}`;
+                }
             }
             clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
         } else {
@@ -120,7 +129,7 @@ if (
                     firstNumPlace.dataset.num !== "" &&
                     secondNumPlace.dataset.num !== "")
             ) {
-                switch (operationPlace.innerHTML) {
+                switch (escape(operationPlace.innerHTML)) {
                     case "/":
                         digitsPlace.dataset.result = (
                             parseFloat(<string>firstNumPlace.dataset.num) /
@@ -144,6 +153,7 @@ if (
                             parseFloat(<string>firstNumPlace.dataset.num) -
                             parseFloat(<string>secondNumPlace.dataset.num)
                         ).toString();
+                        console.log("im minus");
                         break;
                     case "%":
                         digitsPlace.dataset.result = (
@@ -197,46 +207,80 @@ if (
                         }
                         digitsPlace.innerHTML = tempDigitsArr.join("");
                     }
-                } else if (el.innerText === "C") {
-                    digitsPlace.innerHTML = "0";
-                    firstNumPlace.dataset.num = "";
-                    firstNumPlace.innerHTML = "";
-                    secondNumPlace.dataset.num = "";
-                    secondNumPlace.innerHTML = "";
-                    operationPlace.innerHTML = "";
-                    operationPlace.classList.remove("active");
-                    operationPlace.classList.add("inactive");
-                } else if (el.innerText === "/") {
-                    setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "/");
-                } else if (el.innerText === "*") {
-                    setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "*");
-                } else if (el.innerText === "+") {
-                    setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "+");
-                } else if (el.innerText === "-") {
-                    setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "-");
-                } else if (el.innerText === "%") {
-                    setOperation(firstNumPlace, secondNumPlace, digitsPlace, operationPlace, "%");
-                } else if (el.innerText === ".") {
-                    if (digitsPlace.innerHTML.indexOf(".") === -1) {
-                        digitsPlace.innerHTML += ".";
-                    }
-                } else if (el.innerText === "=") {
-                    if (firstNumPlace.innerHTML !== "" && secondNumPlace.innerHTML === "") {
-                        secondNumPlace.dataset.num = digitsPlace.innerHTML;
-                        if (
-                            digitsPlace.innerHTML.length <= 6 &&
-                            !digitsPlace.innerHTML.includes(".")
-                        ) {
-                            secondNumPlace.innerHTML = `${parseFloat(
-                                digitsPlace.innerHTML
-                            ).toPrecision(digitsPlace.innerHTML.length)}`;
-                        } else {
-                            secondNumPlace.innerHTML = `${parseFloat(
-                                digitsPlace.innerHTML
-                            ).toPrecision(6)}`;
-                        }
+                }
+                switch (el.innerText) {
+                    case "C":
                         digitsPlace.innerHTML = "0";
-                    }
+                        clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
+                        break;
+                    case "/":
+                        setOperation(
+                            firstNumPlace,
+                            secondNumPlace,
+                            digitsPlace,
+                            operationPlace,
+                            "/"
+                        );
+                        break;
+                    case "*":
+                        setOperation(
+                            firstNumPlace,
+                            secondNumPlace,
+                            digitsPlace,
+                            operationPlace,
+                            "*"
+                        );
+                        break;
+                    case "+":
+                        setOperation(
+                            firstNumPlace,
+                            secondNumPlace,
+                            digitsPlace,
+                            operationPlace,
+                            "+"
+                        );
+                        break;
+                    case "-":
+                        setOperation(
+                            firstNumPlace,
+                            secondNumPlace,
+                            digitsPlace,
+                            operationPlace,
+                            "-"
+                        );
+                        break;
+                    case "%":
+                        setOperation(
+                            firstNumPlace,
+                            secondNumPlace,
+                            digitsPlace,
+                            operationPlace,
+                            "%"
+                        );
+                        break;
+                    case ".":
+                        if (digitsPlace.innerHTML.indexOf(".") === -1) {
+                            digitsPlace.innerHTML += ".";
+                        }
+                        break;
+                    case "=":
+                        if (firstNumPlace.innerHTML !== "" && secondNumPlace.innerHTML === "") {
+                            secondNumPlace.dataset.num = digitsPlace.innerHTML;
+                            if (
+                                digitsPlace.innerHTML.length <= 6 &&
+                                !digitsPlace.innerHTML.includes(".")
+                            ) {
+                                secondNumPlace.innerHTML = `${parseFloat(
+                                    digitsPlace.innerHTML
+                                ).toPrecision(digitsPlace.innerHTML.length)}`;
+                            } else {
+                                secondNumPlace.innerHTML = `${parseFloat(
+                                    digitsPlace.innerHTML
+                                ).toPrecision(6)}`;
+                            }
+                            digitsPlace.innerHTML = "0";
+                        }
+                        break;
                 }
             }
         });
@@ -244,7 +288,6 @@ if (
 }
 
 document.addEventListener("keydown", (el: KeyboardEvent) => {
-    console.log(el.key);
     for (let i = 0; i < allButtons.length; i++) {
         if (allButtons[i].innerText.toLowerCase() === el.key.toLowerCase()) {
             allButtons[i].dispatchEvent(new Event("click"));
