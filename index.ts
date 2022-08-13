@@ -1,204 +1,159 @@
-interface CalculatorInterface {
-      onTransformClearBtn: () => void;
-      onOperationClick: () => void;
-      onKeyDown: () => void;
-}
-
-class Calculator implements CalculatorInterface {
-      private clearButtonContainer: Element | null;
-      private clearButton: HTMLImageElement | null;
-      private allButtons: NodeListOf<HTMLAnchorElement>;
-      private digitsPlace: HTMLElement | null;
-      private operationPlace: Element | null;
-      private firstNumPlace: HTMLElement | null;
-      private secondNumPlace: HTMLElement | null;
+class Calculator {
+      private allButtons: NodeListOf<HTMLAnchorElement> = document.querySelectorAll("a");
+      private digitsPlace: HTMLElement | null = document.querySelector(".digits");
+      private operationPlace: Element | null = document.querySelector(".operation");
+      private firstNumPlace: HTMLElement | null = document.querySelector(".first-num");
+      private secondNumPlace: HTMLElement | null = document.querySelector(".second-num");
 
       constructor() {
-            this.clearButtonContainer = document.querySelector(".clear-button-container");
-            this.clearButton = document.querySelector(".clear-button");
-            this.allButtons = document.querySelectorAll("a");
-            this.digitsPlace = document.querySelector(".digits");
-            this.operationPlace = document.querySelector(".operation");
-            this.firstNumPlace = document.querySelector(".first-num");
-            this.secondNumPlace = document.querySelector(".second-num");
+            this.onTransformClearBtn();
+            this.onOperationClick();
+            this.onKeyDown();
       }
 
-      private assignNumPlace(numPlace: HTMLElement, digitsPlace: Element): void {
-            if (digitsPlace.innerHTML !== "0" && digitsPlace.innerHTML !== "") {
-                  numPlace.dataset.num = `${parseFloat(digitsPlace.innerHTML)}`;
-                  if (digitsPlace.innerHTML.length <= 6) {
-                        numPlace.innerHTML = `${parseFloat(digitsPlace.innerHTML).toPrecision(
-                              digitsPlace.innerHTML.length
-                        )}`;
+      private assignNumPlace(numPlace: HTMLElement): void {
+            if (this.digitsPlace)
+                  if (this.digitsPlace.innerHTML !== "0" && this.digitsPlace.innerHTML !== "") {
+                        numPlace.dataset.num = `${parseFloat(this.digitsPlace.innerHTML)}`;
+                        if (this.digitsPlace.innerHTML.length <= 6) {
+                              numPlace.innerHTML = `${parseFloat(
+                                    this.digitsPlace.innerHTML
+                              ).toPrecision(this.digitsPlace.innerHTML.length)}`;
+                        } else {
+                              numPlace.innerHTML = `${parseFloat(
+                                    this.digitsPlace.innerHTML
+                              ).toPrecision(6)}`;
+                        }
                   } else {
-                        numPlace.innerHTML = `${parseFloat(digitsPlace.innerHTML).toPrecision(6)}`;
+                        numPlace.dataset.num = "0";
+                        numPlace.innerHTML = "0";
                   }
-            } else {
-                  numPlace.dataset.num = "0";
-                  numPlace.innerHTML = "0";
-            }
       }
 
-      private chooseOperation(
-            firstNumPlace: HTMLElement,
-            secondNumPlace: HTMLElement,
-            digitsPlace: HTMLElement,
-            operationPlace: Element,
-            operation: string
-      ): void {
-            if (operation.includes("img")) {
-                  if (digitsPlace.innerHTML === "Infinity" || digitsPlace.innerHTML === "NaN") {
-                        digitsPlace.innerHTML = "0";
-                  } else {
-                        const tempDigitsArr: string[] = digitsPlace.innerHTML.split("");
-                        tempDigitsArr.pop();
-                        if (tempDigitsArr.length === 0) {
-                              tempDigitsArr.push("0");
-                        }
-                        digitsPlace.innerHTML = tempDigitsArr.join("");
-                  }
-            }
-
-            switch (operation) {
-                  case "C":
-                        digitsPlace.innerHTML = "0";
-                        this.clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
-                        break;
-                  case "/":
-                        this.setOperation(
-                              firstNumPlace,
-                              secondNumPlace,
-                              digitsPlace,
-                              operationPlace,
-                              "/"
-                        );
-                        break;
-                  case "*":
-                        this.setOperation(
-                              firstNumPlace,
-                              secondNumPlace,
-                              digitsPlace,
-                              operationPlace,
-                              "*"
-                        );
-                        break;
-                  case "+":
-                        this.setOperation(
-                              firstNumPlace,
-                              secondNumPlace,
-                              digitsPlace,
-                              operationPlace,
-                              "+"
-                        );
-                        break;
-                  case "-":
-                        this.setOperation(
-                              firstNumPlace,
-                              secondNumPlace,
-                              digitsPlace,
-                              operationPlace,
-                              "-"
-                        );
-                        break;
-                  case "%":
-                        this.setOperation(
-                              firstNumPlace,
-                              secondNumPlace,
-                              digitsPlace,
-                              operationPlace,
-                              "%"
-                        );
-                        break;
-                  case ".":
-                        if (digitsPlace.innerHTML.indexOf(".") === -1) {
-                              digitsPlace.innerHTML += ".";
-                        }
-                        break;
-                  case "=":
-                        if (firstNumPlace.innerHTML !== "" && secondNumPlace.innerHTML === "") {
-                              secondNumPlace.dataset.num = digitsPlace.innerHTML;
-                              if (
-                                    digitsPlace.innerHTML.length <= 6 &&
-                                    !digitsPlace.innerHTML.includes(".")
-                              ) {
-                                    secondNumPlace.innerHTML = `${parseFloat(
-                                          digitsPlace.innerHTML
-                                    ).toPrecision(digitsPlace.innerHTML.length)}`;
-                              } else {
-                                    secondNumPlace.innerHTML = `${parseFloat(
-                                          digitsPlace.innerHTML
-                                    ).toPrecision(6)}`;
+      private chooseOperation(operation: string): void {
+            if (this.digitsPlace && this.secondNumPlace && this.firstNumPlace) {
+                  if (operation.includes("img")) {
+                        if (
+                              this.digitsPlace.innerHTML === "Infinity" ||
+                              this.digitsPlace.innerHTML === "NaN"
+                        ) {
+                              this.digitsPlace.innerHTML = "0";
+                        } else {
+                              const tempDigitsArr: string[] = this.digitsPlace.innerHTML.split("");
+                              tempDigitsArr.pop();
+                              if (tempDigitsArr.length === 0) {
+                                    tempDigitsArr.push("0");
                               }
-                              digitsPlace.innerHTML = "0";
+                              this.digitsPlace.innerHTML = tempDigitsArr.join("");
                         }
-                        break;
+                  }
+
+                  switch (operation) {
+                        case "C":
+                              this.digitsPlace.innerHTML = "0";
+                              this.clearDisplay();
+                              break;
+                        case "/":
+                              this.setOperation("/");
+                              break;
+                        case "*":
+                              this.setOperation("*");
+                              break;
+                        case "+":
+                              this.setOperation("+");
+                              break;
+                        case "-":
+                              this.setOperation("-");
+                              break;
+                        case "%":
+                              this.setOperation("%");
+                              break;
+                        case ".":
+                              if (this.digitsPlace.innerHTML.indexOf(".") === -1) {
+                                    this.digitsPlace.innerHTML += ".";
+                              }
+                              break;
+                        case "=":
+                              if (
+                                    this.firstNumPlace.innerHTML !== "" &&
+                                    this.secondNumPlace.innerHTML === ""
+                              ) {
+                                    this.secondNumPlace.dataset.num = this.digitsPlace.innerHTML;
+                                    if (
+                                          this.digitsPlace.innerHTML.length <= 6 &&
+                                          !this.digitsPlace.innerHTML.includes(".")
+                                    ) {
+                                          this.secondNumPlace.innerHTML = `${parseFloat(
+                                                this.digitsPlace.innerHTML
+                                          ).toPrecision(this.digitsPlace.innerHTML.length)}`;
+                                    } else {
+                                          this.secondNumPlace.innerHTML = `${parseFloat(
+                                                this.digitsPlace.innerHTML
+                                          ).toPrecision(6)}`;
+                                    }
+                                    this.digitsPlace.innerHTML = "0";
+                              }
+                              break;
+                  }
             }
       }
 
-      private setOperation(
-            firstNumPlace: HTMLElement | null,
-            secondNumPlace: HTMLElement | null,
-            digitsPlace: HTMLElement | null,
-            operationPlace: Element | null,
-            operation: string
-      ): void {
+      private setOperation(operation: string): void {
             if (
-                  firstNumPlace instanceof HTMLElement &&
-                  secondNumPlace instanceof HTMLElement &&
-                  digitsPlace &&
-                  operationPlace
+                  this.firstNumPlace &&
+                  this.secondNumPlace &&
+                  this.digitsPlace &&
+                  this.operationPlace
             ) {
-                  operationPlace.classList.remove("inactive");
-                  operationPlace.classList.add("active");
-                  operationPlace.innerHTML = operation;
+                  this.operationPlace.classList.remove("inactive");
+                  this.operationPlace.classList.add("active");
+                  this.operationPlace.innerHTML = operation;
                   if (operation === "%") {
-                        firstNumPlace.dataset.num = digitsPlace.innerHTML;
-                        secondNumPlace.dataset.percent = "100";
+                        this.firstNumPlace.dataset.num = this.digitsPlace.innerHTML;
+                        this.secondNumPlace.dataset.percent = "100";
                   } else {
-                        if (firstNumPlace.innerHTML !== "" && secondNumPlace.innerHTML !== "") {
-                              if (digitsPlace.innerHTML !== "0" && digitsPlace.innerHTML !== "") {
-                                    secondNumPlace.dataset.num = "";
-                                    secondNumPlace.innerHTML = "";
+                        if (
+                              this.firstNumPlace.innerHTML !== "" &&
+                              this.secondNumPlace.innerHTML !== ""
+                        ) {
+                              if (
+                                    this.digitsPlace.innerHTML !== "0" &&
+                                    this.digitsPlace.innerHTML !== ""
+                              ) {
+                                    this.secondNumPlace.dataset.num = "";
+                                    this.secondNumPlace.innerHTML = "";
                               }
                         } else {
-                              if (firstNumPlace.innerHTML === "") {
-                                    this.assignNumPlace(firstNumPlace, digitsPlace);
+                              if (this.firstNumPlace.innerHTML === "") {
+                                    this.assignNumPlace(this.firstNumPlace);
                               } else {
-                                    this.assignNumPlace(secondNumPlace, digitsPlace);
+                                    this.assignNumPlace(this.secondNumPlace);
                               }
-                              digitsPlace.innerHTML = "0";
+                              this.digitsPlace.innerHTML = "0";
                         }
                   }
             }
       }
 
-      private clearDisplay(
-            firstNumPlace: HTMLElement,
-            secondNumPlace: HTMLElement,
-            operationPlace: Element
-      ): void {
-            firstNumPlace.dataset.num = "";
-            firstNumPlace.innerHTML = "";
-            secondNumPlace.dataset.num = "";
-            secondNumPlace.dataset.percent = "";
-            secondNumPlace.innerHTML = "";
-            operationPlace.classList.add("inactive");
-            operationPlace.classList.remove("active");
+      private clearDisplay(): void {
+            if (this.firstNumPlace && this.secondNumPlace && this.operationPlace) {
+                  this.firstNumPlace.dataset.num = "";
+                  this.firstNumPlace.innerHTML = "";
+                  this.secondNumPlace.dataset.num = "";
+                  this.secondNumPlace.dataset.percent = "";
+                  this.secondNumPlace.innerHTML = "";
+                  this.operationPlace.classList.add("inactive");
+                  this.operationPlace.classList.remove("active");
+            }
       }
 
-      private showResult(
-            firstNumPlace: Element | null,
-            secondNumPlace: Element | null,
-            operationPlace: Element | null,
-            digitsPlace: Element | null,
-            result: number
-      ): void {
+      private showResult(result: number): void {
             debugger;
             if (
-                  firstNumPlace instanceof HTMLElement &&
-                  secondNumPlace instanceof HTMLElement &&
-                  digitsPlace &&
-                  operationPlace
+                  this.firstNumPlace &&
+                  this.secondNumPlace &&
+                  this.digitsPlace &&
+                  this.operationPlace
             ) {
                   if (result !== 0) {
                         if (result < Number.MAX_SAFE_INTEGER && result > Number.MIN_SAFE_INTEGER) {
@@ -207,108 +162,107 @@ class Calculator implements CalculatorInterface {
                                     !result.toString().includes("e")
                               ) {
                                     if (result.toString().length > 40) {
-                                          digitsPlace.innerHTML = `${result.toPrecision(20)}`;
+                                          this.digitsPlace.innerHTML = `${result.toPrecision(20)}`;
                                     } else {
-                                          digitsPlace.innerHTML = `${result}`;
+                                          this.digitsPlace.innerHTML = `${result}`;
                                     }
                               } else if (result.toString().length <= 20) {
-                                    digitsPlace.innerHTML = `${result}`;
+                                    this.digitsPlace.innerHTML = `${result}`;
                               } else {
                                     if (
                                           !result.toString().includes(".") &&
                                           !result.toString().includes("e")
                                     ) {
-                                          digitsPlace.innerHTML = `${result.toPrecision(25)}`;
+                                          this.digitsPlace.innerHTML = `${result.toPrecision(25)}`;
                                     } else {
-                                          digitsPlace.innerHTML = `${result.toPrecision(10)}`;
+                                          this.digitsPlace.innerHTML = `${result.toPrecision(10)}`;
                                     }
                               }
                         } else {
-                              digitsPlace.innerHTML = `${result.toPrecision(10)}`;
+                              this.digitsPlace.innerHTML = `${result.toPrecision(10)}`;
                         }
-                        this.clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
+                        this.clearDisplay();
                   } else {
-                        digitsPlace.innerHTML = "0";
-                        this.clearDisplay(firstNumPlace, secondNumPlace, operationPlace);
+                        this.digitsPlace.innerHTML = "0";
+                        this.clearDisplay();
                   }
             }
       }
 
-      private computeResult(
-            firstNumPlace: HTMLElement,
-            secondNumPlace: HTMLElement,
-            digitsPlace: HTMLElement,
-            operation: string
-      ): void {
-            switch (operation) {
-                  case "/":
-                        digitsPlace.dataset.result = (
-                              parseFloat(<string>firstNumPlace.dataset.num) /
-                              parseFloat(<string>secondNumPlace.dataset.num)
-                        ).toString();
-                        break;
-                  case "*":
-                        digitsPlace.dataset.result = (
-                              parseFloat(<string>firstNumPlace.dataset.num) *
-                              parseFloat(<string>secondNumPlace.dataset.num)
-                        ).toString();
-                        break;
-                  case "+":
-                        digitsPlace.dataset.result = (
-                              parseFloat(<string>firstNumPlace.dataset.num) +
-                              parseFloat(<string>secondNumPlace.dataset.num)
-                        ).toString();
-                        break;
-                  case "-":
-                        digitsPlace.dataset.result = (
-                              parseFloat(<string>firstNumPlace.dataset.num) -
-                              parseFloat(<string>secondNumPlace.dataset.num)
-                        ).toString();
-                        break;
-                  case "%":
-                        digitsPlace.dataset.result = (
-                              parseFloat(<string>firstNumPlace.dataset.num) /
-                              parseFloat(<string>secondNumPlace.dataset.percent)
-                        ).toString();
-                        break;
-            }
+      private computeResult(operation: string): void {
+            if (this.digitsPlace && this.secondNumPlace && this.firstNumPlace)
+                  switch (operation) {
+                        case "/":
+                              this.digitsPlace.dataset.result = (
+                                    parseFloat(<string>this.firstNumPlace.dataset.num) /
+                                    parseFloat(<string>this.secondNumPlace.dataset.num)
+                              ).toString();
+                              break;
+                        case "*":
+                              this.digitsPlace.dataset.result = (
+                                    parseFloat(<string>this.firstNumPlace.dataset.num) *
+                                    parseFloat(<string>this.secondNumPlace.dataset.num)
+                              ).toString();
+                              break;
+                        case "+":
+                              this.digitsPlace.dataset.result = (
+                                    parseFloat(<string>this.firstNumPlace.dataset.num) +
+                                    parseFloat(<string>this.secondNumPlace.dataset.num)
+                              ).toString();
+                              break;
+                        case "-":
+                              this.digitsPlace.dataset.result = (
+                                    parseFloat(<string>this.firstNumPlace.dataset.num) -
+                                    parseFloat(<string>this.secondNumPlace.dataset.num)
+                              ).toString();
+                              break;
+                        case "%":
+                              this.digitsPlace.dataset.result = (
+                                    parseFloat(<string>this.firstNumPlace.dataset.num) /
+                                    parseFloat(<string>this.secondNumPlace.dataset.percent)
+                              ).toString();
+                              break;
+                  }
       }
 
-      private checkDigitsLength(digitsPlace: HTMLElement, operation: string): void {
-            if (
-                  digitsPlace.innerHTML.length <= 43 &&
-                  (parseFloat(operation) || operation === "0")
-            ) {
+      private checkDigitsLength(operation: string): void {
+            if (this.digitsPlace)
                   if (
-                        (parseFloat(operation) || operation === "0") &&
-                        digitsPlace.innerHTML !== "0"
+                        this.digitsPlace.innerHTML.length <= 43 &&
+                        (parseFloat(operation) || operation === "0")
                   ) {
-                        digitsPlace.innerHTML = digitsPlace.innerHTML + operation;
-                  } else if (digitsPlace.innerHTML === "0") {
-                        digitsPlace.innerHTML = "";
-                        digitsPlace.innerHTML = digitsPlace.innerHTML + operation;
+                        if (
+                              (parseFloat(operation) || operation === "0") &&
+                              this.digitsPlace.innerHTML !== "0"
+                        ) {
+                              this.digitsPlace.innerHTML = this.digitsPlace.innerHTML + operation;
+                        } else if (this.digitsPlace.innerHTML === "0") {
+                              this.digitsPlace.innerHTML = "";
+                              this.digitsPlace.innerHTML = this.digitsPlace.innerHTML + operation;
+                        }
+                  } else if (this.digitsPlace.innerHTML.length > 43 && parseFloat(operation)) {
+                        alert("YOU CAN ENTER ONLY 43 DIGITS!");
                   }
-            } else if (digitsPlace.innerHTML.length > 43 && parseFloat(operation)) {
-                  alert("YOU CAN ENTER ONLY 43 DIGITS!");
-            }
       }
 
       get result(): string | undefined {
             return this.digitsPlace?.dataset.result;
       }
 
-      public onTransformClearBtn(): void {
-            if (this.clearButtonContainer) {
-                  this.clearButtonContainer.addEventListener("mouseover", () => {
-                        if (this.clearButton) this.clearButton.src = "img/clear-btn-colored.svg";
+      private onTransformClearBtn(): void {
+            const clearButtonContainer = document.querySelector(".clear-button-container");
+            const clearButton: HTMLImageElement | null = document.querySelector(".clear-button");
+            if (clearButtonContainer) {
+                  clearButtonContainer.addEventListener("mouseover", () => {
+                        if (clearButton) clearButton.src = "img/clear-btn-colored.svg";
                   });
-                  this.clearButtonContainer.addEventListener("mouseout", () => {
-                        if (this.clearButton) this.clearButton.src = "img/clear-btn.svg";
+                  clearButtonContainer.addEventListener("mouseout", () => {
+                        if (clearButton) clearButton.src = "img/clear-btn.svg";
                   });
             }
       }
 
-      public onOperationClick(): void {
+      private onOperationClick(): void {
             this.allButtons.forEach((el: HTMLAnchorElement) => {
                   el.addEventListener("click", (e: MouseEvent) => {
                         e.preventDefault();
@@ -327,20 +281,9 @@ class Calculator implements CalculatorInterface {
                                           this.firstNumPlace.dataset.num !== "" &&
                                           this.secondNumPlace.dataset.num !== "")
                               ) {
-                                    this.computeResult(
-                                          this.firstNumPlace,
-                                          this.secondNumPlace,
-                                          this.digitsPlace,
-                                          this.operationPlace.innerHTML
-                                    );
+                                    this.computeResult(this.operationPlace.innerHTML);
                                     if (el.innerHTML === "=" && this.result) {
-                                          this.showResult(
-                                                this.firstNumPlace,
-                                                this.secondNumPlace,
-                                                this.operationPlace,
-                                                this.digitsPlace,
-                                                parseFloat(this.result)
-                                          );
+                                          this.showResult(parseFloat(this.result));
                                     }
                               } else {
                                     this.allButtons.forEach((btn: HTMLAnchorElement) => {
@@ -351,21 +294,15 @@ class Calculator implements CalculatorInterface {
                                     });
                                     el.classList.remove("unclicked");
                                     el.classList.add("clicked");
-                                    this.checkDigitsLength(this.digitsPlace, el.innerText);
-                                    this.chooseOperation(
-                                          this.firstNumPlace,
-                                          this.secondNumPlace,
-                                          this.digitsPlace,
-                                          this.operationPlace,
-                                          el.innerHTML
-                                    );
+                                    this.checkDigitsLength(el.innerText);
+                                    this.chooseOperation(el.innerHTML);
                               }
                         }
                   });
             });
       }
 
-      public onKeyDown(): void {
+      private onKeyDown(): void {
             document.addEventListener("keydown", (el: KeyboardEvent) => {
                   for (let i = 0; i < this.allButtons.length; i++) {
                         if (this.allButtons[i].innerText.toLowerCase() === el.key.toLowerCase()) {
@@ -387,8 +324,4 @@ class Calculator implements CalculatorInterface {
       }
 }
 
-const calculator = new Calculator();
-
-calculator.onTransformClearBtn();
-calculator.onOperationClick();
-calculator.onKeyDown();
+new Calculator();
