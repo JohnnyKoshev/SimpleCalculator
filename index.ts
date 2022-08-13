@@ -211,10 +211,8 @@ class Calculator implements CalculatorInterface {
                                     } else {
                                           digitsPlace.innerHTML = `${result}`;
                                     }
-                              } else if (result.toString().length <= 10) {
-                                    digitsPlace.innerHTML = `${parseFloat(
-                                          result.toFixed(result.toString().length)
-                                    )}`;
+                              } else if (result.toString().length <= 20) {
+                                    digitsPlace.innerHTML = `${result}`;
                               } else {
                                     if (
                                           !result.toString().includes(".") &&
@@ -222,7 +220,7 @@ class Calculator implements CalculatorInterface {
                                     ) {
                                           digitsPlace.innerHTML = `${result.toPrecision(25)}`;
                                     } else {
-                                          digitsPlace.innerHTML = `${result.toFixed(10)}`;
+                                          digitsPlace.innerHTML = `${result.toPrecision(10)}`;
                                     }
                               }
                         } else {
@@ -242,7 +240,7 @@ class Calculator implements CalculatorInterface {
             digitsPlace: HTMLElement,
             operation: string
       ): void {
-            switch (escape(operation)) {
+            switch (operation) {
                   case "/":
                         digitsPlace.dataset.result = (
                               parseFloat(<string>firstNumPlace.dataset.num) /
@@ -321,12 +319,10 @@ class Calculator implements CalculatorInterface {
                               this.secondNumPlace instanceof HTMLElement
                         ) {
                               if (
-                                    (el.innerHTML === "=" &&
-                                          this.operationPlace.innerHTML !== "" &&
+                                    (this.operationPlace.innerHTML !== "" &&
                                           this.firstNumPlace.dataset.num &&
                                           this.secondNumPlace.dataset.percent) ||
-                                    (el.innerHTML === "=" &&
-                                          this.secondNumPlace.dataset.num &&
+                                    (this.secondNumPlace.dataset.num &&
                                           this.firstNumPlace.dataset.num &&
                                           this.firstNumPlace.dataset.num !== "" &&
                                           this.secondNumPlace.dataset.num !== "")
