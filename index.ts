@@ -293,7 +293,7 @@ class Calculator implements CalculatorInterface {
             }
       }
 
-      get result() {
+      get result(): string | undefined {
             return this.digitsPlace?.dataset.result;
       }
 
