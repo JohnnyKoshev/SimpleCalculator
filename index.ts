@@ -1,3 +1,6 @@
+type Operation = "-" | "*" | "+" | "/" | "%";
+type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+
 class Calculator {
       private allButtons: NodeListOf<HTMLAnchorElement> = document.querySelectorAll("a");
       private digitsPlace: HTMLElement | null = document.querySelector(".digits");
@@ -30,6 +33,26 @@ class Calculator {
                   }
       }
 
+      private processEqualitySign(): void {
+            if (this.digitsPlace && this.secondNumPlace && this.firstNumPlace)
+                  if (this.firstNumPlace.innerHTML !== "" && this.secondNumPlace.innerHTML === "") {
+                        this.secondNumPlace.dataset.num = this.digitsPlace.innerHTML;
+                        if (
+                              this.digitsPlace.innerHTML.length <= 6 &&
+                              !this.digitsPlace.innerHTML.includes(".")
+                        ) {
+                              this.secondNumPlace.innerHTML = `${parseFloat(
+                                    this.digitsPlace.innerHTML
+                              ).toPrecision(this.digitsPlace.innerHTML.length)}`;
+                        } else {
+                              this.secondNumPlace.innerHTML = `${parseFloat(
+                                    this.digitsPlace.innerHTML
+                              ).toPrecision(6)}`;
+                        }
+                        this.digitsPlace.innerHTML = "0";
+                  }
+      }
+
       private chooseOperation(operation: string): void {
             if (this.digitsPlace && this.secondNumPlace && this.firstNumPlace) {
                   if (operation.includes("img")) {
@@ -47,7 +70,6 @@ class Calculator {
                               this.digitsPlace.innerHTML = tempDigitsArr.join("");
                         }
                   }
-
                   switch (operation) {
                         case "C":
                               this.digitsPlace.innerHTML = "0";
@@ -74,31 +96,13 @@ class Calculator {
                               }
                               break;
                         case "=":
-                              if (
-                                    this.firstNumPlace.innerHTML !== "" &&
-                                    this.secondNumPlace.innerHTML === ""
-                              ) {
-                                    this.secondNumPlace.dataset.num = this.digitsPlace.innerHTML;
-                                    if (
-                                          this.digitsPlace.innerHTML.length <= 6 &&
-                                          !this.digitsPlace.innerHTML.includes(".")
-                                    ) {
-                                          this.secondNumPlace.innerHTML = `${parseFloat(
-                                                this.digitsPlace.innerHTML
-                                          ).toPrecision(this.digitsPlace.innerHTML.length)}`;
-                                    } else {
-                                          this.secondNumPlace.innerHTML = `${parseFloat(
-                                                this.digitsPlace.innerHTML
-                                          ).toPrecision(6)}`;
-                                    }
-                                    this.digitsPlace.innerHTML = "0";
-                              }
+                              this.processEqualitySign();
                               break;
                   }
             }
       }
 
-      private setOperation(operation: string): void {
+      private setOperation(operation: Operation): void {
             if (
                   this.firstNumPlace &&
                   this.secondNumPlace &&
@@ -148,7 +152,6 @@ class Calculator {
       }
 
       private showResult(result: number): void {
-            debugger;
             if (
                   this.firstNumPlace &&
                   this.secondNumPlace &&
@@ -189,60 +192,49 @@ class Calculator {
             }
       }
 
-      private computeResult(operation: string): void {
+      private computeResult(operation: Operation) {
             if (this.digitsPlace && this.secondNumPlace && this.firstNumPlace)
-                  switch (operation) {
-                        case "/":
-                              this.digitsPlace.dataset.result = (
-                                    parseFloat(<string>this.firstNumPlace.dataset.num) /
-                                    parseFloat(<string>this.secondNumPlace.dataset.num)
-                              ).toString();
-                              break;
-                        case "*":
-                              this.digitsPlace.dataset.result = (
-                                    parseFloat(<string>this.firstNumPlace.dataset.num) *
-                                    parseFloat(<string>this.secondNumPlace.dataset.num)
-                              ).toString();
-                              break;
-                        case "+":
-                              this.digitsPlace.dataset.result = (
-                                    parseFloat(<string>this.firstNumPlace.dataset.num) +
-                                    parseFloat(<string>this.secondNumPlace.dataset.num)
-                              ).toString();
-                              break;
-                        case "-":
-                              this.digitsPlace.dataset.result = (
-                                    parseFloat(<string>this.firstNumPlace.dataset.num) -
-                                    parseFloat(<string>this.secondNumPlace.dataset.num)
-                              ).toString();
-                              break;
-                        case "%":
-                              this.digitsPlace.dataset.result = (
-                                    parseFloat(<string>this.firstNumPlace.dataset.num) /
-                                    parseFloat(<string>this.secondNumPlace.dataset.percent)
-                              ).toString();
-                              break;
-                  }
+                  if (operation !== "%")
+                        this.digitsPlace.dataset.result = Function(
+                              "return " +
+                                    `${this.firstNumPlace.dataset.num}${operation}${this.secondNumPlace.dataset.num}`
+                        )().toString();
+                  else
+                        this.digitsPlace.dataset.result = Function(
+                              "return " +
+                                    `${this.firstNumPlace.dataset.num}/${this.secondNumPlace.dataset.percent}`
+                        )().toString();
       }
 
-      private checkDigitsLength(operation: string): void {
+      private checkDigitsLength(digit: Digit): void {
             if (this.digitsPlace)
                   if (
                         this.digitsPlace.innerHTML.length <= 43 &&
-                        (parseFloat(operation) || operation === "0")
+                        (parseFloat(digit) || digit === "0")
                   ) {
                         if (
-                              (parseFloat(operation) || operation === "0") &&
+                              (parseFloat(digit) || digit === "0") &&
                               this.digitsPlace.innerHTML !== "0"
                         ) {
-                              this.digitsPlace.innerHTML = this.digitsPlace.innerHTML + operation;
+                              this.digitsPlace.innerHTML = this.digitsPlace.innerHTML + digit;
                         } else if (this.digitsPlace.innerHTML === "0") {
                               this.digitsPlace.innerHTML = "";
-                              this.digitsPlace.innerHTML = this.digitsPlace.innerHTML + operation;
+                              this.digitsPlace.innerHTML = this.digitsPlace.innerHTML + digit;
                         }
-                  } else if (this.digitsPlace.innerHTML.length > 43 && parseFloat(operation)) {
+                  } else if (this.digitsPlace.innerHTML.length > 43 && parseFloat(digit)) {
                         alert("YOU CAN ENTER ONLY 43 DIGITS!");
                   }
+      }
+
+      private demonstrateClick(el: HTMLAnchorElement): void {
+            this.allButtons.forEach((btn: HTMLAnchorElement) => {
+                  if (btn.innerText !== el.innerText) {
+                        btn.classList.remove("clicked");
+                        btn.classList.add("unclicked");
+                  }
+            });
+            el.classList.remove("unclicked");
+            el.classList.add("clicked");
       }
 
       get result(): string | undefined {
@@ -262,42 +254,35 @@ class Calculator {
             }
       }
 
+      private processCalculator(el: HTMLAnchorElement): void {
+            if (this.operationPlace && this.firstNumPlace && this.secondNumPlace)
+                  if (
+                        (el.innerText !== "C" &&
+                              this.operationPlace.innerHTML !== "" &&
+                              this.firstNumPlace.dataset.num &&
+                              this.secondNumPlace.dataset.percent) ||
+                        (el.innerText !== "C" &&
+                              this.secondNumPlace.dataset.num &&
+                              this.firstNumPlace.dataset.num &&
+                              this.firstNumPlace.dataset.num !== "" &&
+                              this.secondNumPlace.dataset.num !== "")
+                  ) {
+                        this.computeResult(this.operationPlace.innerHTML as Operation);
+                        if (el.innerHTML === "=" && this.result) {
+                              this.showResult(parseFloat(this.result));
+                        }
+                  } else {
+                        this.demonstrateClick(el);
+                        this.checkDigitsLength(el.innerText as Digit);
+                        this.chooseOperation(el.innerHTML);
+                  }
+      }
+
       private onOperationClick(): void {
             this.allButtons.forEach((el: HTMLAnchorElement) => {
                   el.addEventListener("click", (e: MouseEvent) => {
                         e.preventDefault();
-                        if (
-                              this.digitsPlace instanceof HTMLElement &&
-                              this.operationPlace &&
-                              this.firstNumPlace instanceof HTMLElement &&
-                              this.secondNumPlace instanceof HTMLElement
-                        ) {
-                              if (
-                                    (this.operationPlace.innerHTML !== "" &&
-                                          this.firstNumPlace.dataset.num &&
-                                          this.secondNumPlace.dataset.percent) ||
-                                    (this.secondNumPlace.dataset.num &&
-                                          this.firstNumPlace.dataset.num &&
-                                          this.firstNumPlace.dataset.num !== "" &&
-                                          this.secondNumPlace.dataset.num !== "")
-                              ) {
-                                    this.computeResult(this.operationPlace.innerHTML);
-                                    if (el.innerHTML === "=" && this.result) {
-                                          this.showResult(parseFloat(this.result));
-                                    }
-                              } else {
-                                    this.allButtons.forEach((btn: HTMLAnchorElement) => {
-                                          if (btn.innerText !== el.innerText) {
-                                                btn.classList.remove("clicked");
-                                                btn.classList.add("unclicked");
-                                          }
-                                    });
-                                    el.classList.remove("unclicked");
-                                    el.classList.add("clicked");
-                                    this.checkDigitsLength(el.innerText);
-                                    this.chooseOperation(el.innerHTML);
-                              }
-                        }
+                        this.processCalculator(el);
                   });
             });
       }
