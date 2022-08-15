@@ -38,6 +38,6 @@ Simple Calculator is an application which enables a user to perform simple-one t
    
   - At this moment, only *__=__* is available to be pressed to get the result
   
-    ![](https://i.ibb.co/8DkDCCM/percentage-2.png)
-    ![](https://i.ibb.co/bgjdjRK/percentage-3.png)
+   ![](https://i.ibb.co/8DkDCCM/percentage-2.png)
+   ![](https://i.ibb.co/bgjdjRK/percentage-3.png)
   
