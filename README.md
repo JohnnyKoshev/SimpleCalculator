@@ -41,3 +41,7 @@ Simple Calculator is an application which enables a user to perform simple-one t
    ![](https://i.ibb.co/8DkDCCM/percentage-2.png)
    ![](https://i.ibb.co/bgjdjRK/percentage-3.png)
   
+## License
+
+The project is licensed under the MIT License.  
+  
