@@ -30,7 +30,13 @@ To use the calculator, follow these steps:
    git clone https://github.com/JohnnyKoshev/SimpleCalculator.git
    ```
 
-2. Compile `index.ts` file. Run in the project directory the following command:
+2. Open the project directory:
+
+   ```
+   cd SimpleCalculator
+   ```
+
+4. Compile `index.ts` file. Run in the project directory the following command:
    
    ```
    tsc
