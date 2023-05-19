@@ -30,7 +30,13 @@ To use the calculator, follow these steps:
    git clone https://github.com/your-username/calculator.git
    ```
 
-2. Open the `index.html` file in your preferred web browser.
+2. Compile `index.ts` file. Run in the project directory the following command:
+   
+   ```
+   tsc
+   ```
+
+3. Open the `index.html` file in your preferred web browser.
 
 ## User Flow -- Operations
 - Multiplication/Subtraction/Addition/Division
