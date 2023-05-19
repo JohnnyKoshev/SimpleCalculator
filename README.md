@@ -27,7 +27,7 @@ To use the calculator, follow these steps:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/calculator.git
+   git clone https://github.com/JohnnyKoshev/SimpleCalculator.git
    ```
 
 2. Compile `index.ts` file. Run in the project directory the following command:
